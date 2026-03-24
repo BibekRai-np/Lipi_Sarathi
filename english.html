@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lipi सारथि — English QWERTY Virtual Keyboard with Numpad</title>
+  <meta name="description" content="Lipi सारथि English QWERTY: Full English Virtual keyboard with numpad — Apple-inspired design. Zero installation, works in any browser.">
+  <meta name="keywords" content="english keyboard online, qwerty keyboard, virtual keyboard, numpad keyboard">
+  <meta name="author" content="Bibek Rai">
+  <meta property="og:title" content="Lipi सारथि — English QWERTY Keyboard">
+  <meta property="og:description" content="Full English QWERTY with numpad — browser based, zero installation.">
+  <meta property="og:image" content="fevicon.png">
+  <link rel="icon" type="image/png" href="fevicon.png">
+  <script src="src/protection.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════
+     LIPI SARATHI — ENGLISH QWERTY PAGE
+     Apple-Inspired Design System
+     ───────────────────────────────────────────────────────────────────
+     CSS organised into six sections:
+       1. Design Tokens   — all CSS custom properties
+       2. Reset & Base    — minimal reset + body
+       3. Nav             — sticky top nav (matches index.html)
+       4. Page Header     — title block (.hd)
+       5. Keyboard Widget — output panel + keyboard + numpad
+       6. Footer          — bottom bar (matches index.html)
+
+     Apple Palette Reference:
+       Science Blue  #0066CC  — primary accent / key-press
+       Shark         #1D1D1F  — primary dark text / deck body
+       Athens Gray   #F5F5F7  — key caps / surface
+       White         #FFFFFF  — backgrounds / panels
+     ═══════════════════════════════════════════════════════════════════ */
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     1. DESIGN TOKENS
+    ───────────────────────────────────────────────────────────────── */
+    :root {
+      /* ── Shared site palette (matches index.html) ─────────────────── */
+      --navy:        #003893;
+      --navy2:       #001a5c;
+      --crimson:     #c8102e;
+      --gold-lt:     #f0a830;
+      --ink:         #0f1420;
+      --muted:       #64748b;
+      --border-site: #e2e8f0;
+      --bg-site:     #f8fafc;
+      --panel-site:  #f1f5f9;
+
+      /* ── Apple palette ───────────────────────────────────────────── */
+      --apple-blue:      #0066CC;   /* Science Blue — primary accent   */
+      --apple-blue-lt:   #0077ED;   /* hover / lighter blue            */
+      --apple-blue-dk:   #004FA3;   /* pressed / deeper blue           */
+      --apple-blue-glo:  rgba(0, 102, 204, .14);
+
+      --apple-shark:     #1D1D1F;   /* Shark — dark text & deck        */
+      --apple-shark-lt:  #2D2D2F;   /* slightly lighter surface        */
+      --apple-shark-mid: #424245;   /* mid-tone deck/border            */
+
+      --apple-gray:      #F5F5F7;   /* Athens Gray — key caps          */
+      --apple-gray-dk:   #E8E8ED;   /* key border / subtle shadow      */
+      --apple-gray-mid:  #D2D2D7;   /* dividers, state bar borders     */
+      --apple-gray-dim:  #98989D;   /* muted labels                    */
+
+      --apple-white:     #FFFFFF;
+      --apple-surface:   #FAFAFA;   /* panel / output area bg          */
+
+      /* ── Keyboard sizing ─────────────────────────────────────────── */
+      /* --ku scales the entire keyboard responsively */
+      --ku:  clamp(34px, calc((100vw - 80px) / 20.8), 50px);
+      --gap: clamp(3px, 0.34vw, 5px);
+      --kh:  calc(var(--ku) * 0.96);
+
+      /* ── Keyboard deck colors ────────────────────────────────────── */
+      --deck-bg:     #1C1C1E;       /* keyboard outer body             */
+      --deck-body:   #2C2C2E;       /* keyboard inner tray             */
+      --deck-border: #3A3A3C;       /* deck border / rim               */
+      --deck-sep:    #48484A;       /* separator line                  */
+
+      /* ── Key cap colors ──────────────────────────────────────────── */
+      --key-top:     var(--apple-gray);
+      --key-base:    var(--apple-gray-dk);
+      --key-border:  #C7C7CC;       /* subtle border                   */
+      --key-bot:     #B0B0B8;       /* bottom-edge depth               */
+      --key-fn-bg:   #EBEBF0;       /* function key face               */
+
+      /* ── Key label colors ────────────────────────────────────────── */
+      --label-norm:  var(--apple-shark);   /* primary char              */
+      --label-shift: var(--apple-blue);    /* shift char                */
+      --label-fn:    var(--apple-shark-mid);
+
+      /* ── UI chrome ───────────────────────────────────────────────── */
+      --ui-text:     var(--apple-gray);    /* light text on dark bg     */
+      --ui-mid:      var(--apple-gray-mid);
+      --ui-dim:      var(--apple-gray-dim);
+      --ui-dim2:     var(--apple-shark-mid);
+
+      /* ── Typography ──────────────────────────────────────────────── */
+      --font-disp:  'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+      --font-body:  'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      --font-mono:  'IBM Plex Mono', 'SF Mono', 'Courier New', monospace;
+      --font-dev:   'Noto Sans Devanagari', 'Mangal', sans-serif;
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     2. RESET & BASE
+    ───────────────────────────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-site);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    img { max-width: 100%; display: block; }
+    a   { color: var(--navy); text-decoration: none; }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     3. NAV  (matches index.html exactly)
+    ───────────────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border-site);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: color .15s, background .15s;
+    }
+
+    .nav-link:hover { color: var(--navy); background: var(--panel-site); }
+
+    .nav-link-active {
+      color: var(--navy);
+      background: var(--panel-site);
+      border-color: var(--border-site);
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      background: var(--navy);
+      color: white !important;
+      border-color: var(--navy) !important;
+      font-weight: 600;
+    }
+
+    .nav-cta:hover { background: var(--navy2) !important; }
+
+    /* Ad slot — top */
+    #ad-top {
+      width: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--panel-site);
+      border-bottom: 1px solid var(--border-site);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--border-site);
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     4. PAGE HEADER  (.hd)
+     Apple-style: clean, minimal, white surface
+    ───────────────────────────────────────────────────────────────── */
+
+    /* Entry animations */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hd        { animation: riseIn .5s ease both; }
+    .out-wrap  { animation: riseIn .5s .08s ease both; }
+    .kb-wrap   { animation: riseIn .5s .16s ease both; }
+
+    .hd {
+      width: 100%;
+      text-align: center;
+      padding: 44px 20px 32px;
+      background: var(--apple-white);
+      border-bottom: 1px solid var(--apple-gray-dk);
+    }
+
+    .hd-eye {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .hd-eye::before,
+    .hd-eye::after {
+      content: '';
+      width: 48px;
+      height: 1px;
+      background: var(--apple-gray-mid);
+    }
+
+    .hd-icon {
+      font-size: 22px;
+      filter: drop-shadow(0 2px 8px rgba(0, 102, 204, .25));
+    }
+
+    .hd h1 {
+      font-family: var(--font-disp);
+      font-size: clamp(22px, 3.4vw, 40px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      color: var(--apple-shark);
+    }
+
+    .hd h1 em {
+      color: var(--apple-blue);
+      font-style: normal;
+    }
+
+    .hd-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--apple-gray-dim);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     5. KEYBOARD WIDGET
+         5a  Page wrapper
+         5b  Output panel
+         5c  Keyboard scroll + outer wrapper
+         5d  Title bar + state dots
+         5e  Keyboard body layout (main + numpad)
+         5f  Key rows (standard + function row)
+         5g  Key base styles
+         5h  Character label spans
+         5i  Functional keys (Caps, Shift, Num Lock, Space)
+         5j  Numpad (CSS Grid)
+    ───────────────────────────────────────────────────────────────── */
+
+    /* Centres and constrains all keyboard content */
+    .kb-page {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 52px;
+      /* Subtle Apple-style warm surface */
+      background: var(--apple-surface);
+    }
+
+    /* ── 5b  OUTPUT PANEL ──────────────────────────────────────────── */
+    .out-wrap {
+      width: 100%;
+      max-width: calc(19 * (var(--ku) + var(--gap)) - var(--gap) + 76px);
+      background: var(--apple-white);
+      border: 1px solid var(--apple-gray-dk);
+      border-radius: 12px;
+      padding: 16px 20px 14px;
+      margin-bottom: 18px;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, .06),
+        0 4px 16px rgba(0, 0, 0, .06);
+    }
+
+    .out-topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .out-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--apple-gray-dim);
+    }
+
+    .out-stats {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--apple-blue);
+      letter-spacing: .04em;
+      transition: color .2s;
+    }
+
+    .out-area {
+      width: 100%;
+      min-height: 80px;
+      background: var(--apple-gray);
+      border: 1px solid var(--apple-gray-dk);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: var(--font-mono);
+      font-size: clamp(16px, 2vw, 22px);
+      line-height: 1.75;
+      color: var(--apple-shark);
+      outline: none;
+      cursor: text;
+      word-break: break-word;
+      caret-color: var(--apple-blue);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .out-area:focus {
+      border-color: var(--apple-blue);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, .12);
+      background: var(--apple-white);
+    }
+
+    .out-area:empty::before {
+      content: 'Start typing…';
+      color: var(--apple-gray-dim);
+      pointer-events: none;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      border-top: 1px solid var(--apple-gray-dk);
+      padding-top: 11px;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--apple-gray-mid);
+      color: var(--apple-gray-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      color: var(--apple-shark);
+      border-color: var(--apple-blue);
+      background: var(--apple-blue-glo);
+    }
+
+    .btn:active { transform: scale(.97); }
+
+    .btn-del {
+      border-color: rgba(200, 50, 30, .35);
+      color: rgba(200, 50, 30, .5);
+    }
+
+    .btn-del:hover {
+      color: #dd3311;
+      border-color: #dd3311;
+      background: rgba(200, 50, 30, .07);
+    }
+
+    /* Sound toggle */
+    .btn-snd { margin-left: auto; border-color: var(--apple-blue); color: var(--apple-blue); }
+    .btn-snd:hover { background: var(--apple-blue-glo); }
+    .btn-snd.muted { border-color: var(--apple-gray-mid); color: var(--apple-gray-dim); }
+
+    .toast {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--apple-blue);
+      opacity: 0;
+      transition: opacity .3s;
+      letter-spacing: .06em;
+    }
+
+    .toast.on { opacity: 1; }
+
+    /* ── 5c  KEYBOARD SCROLL + OUTER WRAPPER ──────────────────────── */
+    .kb-wrap {
+      width: 100%;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      padding-bottom: 6px;
+    }
+
+    .kb-wrap::-webkit-scrollbar        { height: 3px; }
+    .kb-wrap::-webkit-scrollbar-track  { background: transparent; }
+    .kb-wrap::-webkit-scrollbar-thumb  { background: var(--apple-gray-mid); border-radius: 2px; }
+
+    .kb-outer {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    /* ── 5d  TITLE BAR + STATE DOTS ───────────────────────────────── */
+    .kb-titlebar {
+      background: var(--deck-bg);
+      border: 1px solid var(--deck-border);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ui-dim);
+    }
+
+    .state-dots { display: flex; gap: 6px; margin-right: 4px; }
+
+    .state-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 1px solid var(--ui-dim);
+      transition: all .2s;
+    }
+
+    /* Blue = Shift */
+    .dot-shift { border-color: rgba(0, 102, 204, .4); }
+    .dot-shift.on {
+      background: var(--apple-blue-lt);
+      border-color: var(--apple-blue-lt);
+      box-shadow: 0 0 8px rgba(0, 102, 204, .5);
+    }
+
+    /* Brighter blue = Caps Lock */
+    .dot-caps { border-color: rgba(0, 102, 204, .25); }
+    .dot-caps.on {
+      background: var(--apple-blue);
+      border-color: var(--apple-blue);
+      box-shadow: 0 0 8px rgba(0, 102, 204, .5);
+    }
+
+    /* Dimmer = Num Lock */
+    .dot-num { border-color: rgba(0, 80, 160, .25); }
+    .dot-num.on {
+      background: var(--apple-blue-dk);
+      border-color: var(--apple-blue-dk);
+      box-shadow: 0 0 8px rgba(0, 80, 160, .45);
+    }
+
+    .mode-lbl { color: var(--ui-text); font-size: 10px; }
+    .bar-hint { margin-left: auto; font-size: 9px; color: var(--ui-dim); }
+
+    /* ── 5e  KEYBOARD BODY LAYOUT ──────────────────────────────────── */
+    .kb-body {
+      background: linear-gradient(168deg, var(--apple-shark-lt) 0%, var(--deck-body) 50%, var(--deck-bg) 100%);
+      border: 1px solid var(--deck-border);
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 16px 20px 22px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      box-shadow:
+        0 28px 80px rgba(0, 0, 0, .3),
+        inset 0 1px 0 rgba(255, 255, 255, .04),
+        inset 0 -1px 0 rgba(0, 0, 0, .3);
+    }
+
+    /* ── 5f  KEY ROWS ──────────────────────────────────────────────── */
+    .kb-main { flex-shrink: 0; }
+
+    /* Standard key rows */
+    .kb-row {
+      display: flex;
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+      align-items: stretch;
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+
+    .kb-row:last-child { margin-bottom: 0; }
+
+    /* Function row: equal-flex keys, visual group spacing */
+    .fn-row {
+      display: flex;
+      gap: var(--gap);
+      margin-bottom: calc(var(--gap) * 2.5);
+      align-items: stretch;
+    }
+
+    .fn-row .key { flex: 1; min-width: 0; }
+
+    /* Visual gap between Esc and F1, and between groups */
+    .fn-sep { flex-shrink: 0; width: calc(var(--gap) * 2.5); }
+
+    /* ── 5g  KEY BASE ──────────────────────────────────────────────── */
+    /*
+     * --kw = key width in units, set inline by JS.
+     * Width formula: kw × (ku + gap) − gap
+     * All rows summing to 15u share identical total pixel width.
+     * Flat MacBook / Apple Magic Keyboard profile — minimal 3-D depth.
+     */
+    .key {
+      width:  calc(var(--kw, 1) * (var(--ku) + var(--gap)) - var(--gap));
+      height: var(--kh);
+      flex-shrink: 0;
+
+      background: linear-gradient(178deg, var(--key-top) 0%, var(--key-base) 100%);
+      border: 1px solid var(--key-border);
+      border-bottom: 2px solid var(--key-bot);
+      border-radius: 6px;
+
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, .15),
+        inset 0 1px 0 rgba(255, 255, 255, .8),
+        inset 0 -1px 0 rgba(0, 0, 0, .06);
+
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: filter .07s, transform .07s, box-shadow .1s, background .1s;
+    }
+
+    .key:hover {
+      filter: brightness(1.02);
+      box-shadow:
+        0 2px 8px rgba(0, 0, 0, .15),
+        0 0 0 2px rgba(0, 102, 204, .2),
+        inset 0 1px 0 rgba(255, 255, 255, .85);
+    }
+
+    .key:active,
+    .key.pressed {
+      background: linear-gradient(178deg, var(--apple-blue-lt) 0%, var(--apple-blue) 100%);
+      border-color: var(--apple-blue-dk);
+      border-bottom-width: 1px;
+      transform: translateY(1px);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .2), 0 0 18px rgba(0, 102, 204, .25);
+    }
+
+    .key:active .kn,
+    .key.pressed .kn,
+    .key:active .ks,
+    .key.pressed .ks { color: white !important; }
+
+    /* ── 5h  CHARACTER LABEL SPANS ─────────────────────────────────── */
+    /* Top-left: shift character — Apple blue */
+    .ks {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: clamp(7px, calc(var(--ku) * .2), 12px);
+      color: var(--label-shift);
+      line-height: 1;
+      padding: calc(var(--ku) * .08) 0 0 calc(var(--ku) * .09);
+      min-height: 1em;
+    }
+
+    /* Bottom-left: normal character — Shark dark */
+    .kn {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: clamp(11px, calc(var(--ku) * .35), 20px);
+      color: var(--label-norm);
+      line-height: 1;
+      padding: 0 0 calc(var(--ku) * .09) calc(var(--ku) * .09);
+    }
+
+    /* Shift active: swap size/colour prominence */
+    .shift-live .ks { font-size: clamp(10px, calc(var(--ku) * .33), 19px); color: var(--label-norm); }
+    .shift-live .kn { font-size: clamp(7px,  calc(var(--ku) * .2),  12px); color: var(--label-shift); }
+
+    /* ── 5i  FUNCTIONAL KEYS ───────────────────────────────────────── */
+    .key-fn {
+      background: linear-gradient(178deg, var(--key-fn-bg) 0%, var(--apple-gray-dk) 100%);
+      border-color: #C2C2C8;
+    }
+
+    .key-fn .fn-lbl {
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: clamp(7px, calc(var(--ku) * .17), 11px);
+      color: var(--label-fn);
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 3px;
+      letter-spacing: .02em;
+    }
+
+    /* Tighter label for the fn-row */
+    .fn-row .key-fn .fn-lbl { font-size: clamp(6px, calc(var(--ku) * .155), 10px); }
+
+    /* CapsLock active — filled Apple blue */
+    .caps-lit {
+      background: linear-gradient(178deg, var(--apple-blue-lt) 0%, var(--apple-blue) 100%) !important;
+      border-color: var(--apple-blue-dk) !important;
+      box-shadow: 0 0 12px rgba(0, 102, 204, .3), inset 0 1px 0 rgba(255, 255, 255, .3) !important;
+    }
+
+    .caps-lit .fn-lbl { color: white !important; font-weight: 600; }
+
+    /* Shift held — soft blue tint */
+    .shift-lit {
+      background: linear-gradient(178deg, #D6E8FF 0%, #C0D8F8 100%) !important;
+      border-color: var(--apple-blue) !important;
+    }
+
+    .shift-lit .fn-lbl { color: var(--apple-blue-dk) !important; }
+
+    /* Num Lock active */
+    .numlock-on {
+      background: linear-gradient(178deg, var(--apple-blue-lt) 0%, var(--apple-blue) 100%) !important;
+      border-color: var(--apple-blue-dk) !important;
+    }
+
+    .numlock-on .fn-lbl { color: white !important; font-weight: 600; }
+
+    /* Space bar label */
+    .sp-lbl {
+      font-family: var(--font-mono);
+      font-size: clamp(7px, calc(var(--ku) * .14), 10px);
+      color: var(--label-fn);
+      position: absolute;
+      bottom: calc(var(--ku) * .09);
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── 5j  NUMPAD (CSS Grid) ─────────────────────────────────────── */
+    /* Vertical separator between main keyboard and numpad */
+    .kb-sep {
+      width: 1px;
+      align-self: stretch;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--deck-sep) 30%,
+        var(--deck-sep) 70%,
+        transparent
+      );
+      flex-shrink: 0;
+      margin: 4px 2px;
+    }
+
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(4, var(--ku));
+      grid-template-rows: repeat(5, var(--kh));
+      gap: var(--gap);
+      flex-shrink: 0;
+    }
+
+    /* Numpad keys: grid controls dimensions */
+    .numpad .key {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(178deg, var(--apple-gray-dk) 0%, #DCDCE0 100%);
+      border-color: #B8B8BF;
+    }
+
+    /* Numpad character label — centred */
+    .np-lbl {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: clamp(11px, calc(var(--ku) * .32), 18px);
+      color: var(--label-norm);
+      text-align: center;
+      padding: 2px;
+      letter-spacing: .02em;
+    }
+
+    /* Smaller label for function-ish numpad keys */
+    .np-lbl.sm   { font-size: clamp(8px,  calc(var(--ku) * .22), 13px); color: var(--label-fn); }
+    /* Tall + / Enter keys: slightly larger label */
+    .np-lbl.tall { font-size: clamp(14px, calc(var(--ku) * .36), 22px); }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     6. FOOTER  (matches index.html exactly)
+    ───────────────────────────────────────────────────────────────── */
+    #ad-footer {
+      width: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--panel-site);
+      border-top: 1px solid var(--border-site);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--border-site);
+    }
+
+    .footer {
+      width: 100%;
+      background: var(--ink);
+      color: rgba(255, 255, 255, .55);
+      padding: 32px 20px;
+      font-size: 13px;
+      margin-top: auto;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-dev-name {
+      font-family: var(--font-dev);
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .88);
+    }
+
+    .footer a {
+      color: var(--gold-lt);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .footer a:hover { color: white; }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════ AD TOP ════════════════════════════ -->
+  <!-- Paste AdSense code here when approved -->
+  <div id="ad-top"></div>
+
+  <!-- ════════════════════════════════ NAV ═════════════════════════════ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html">
+        <img src="src/lipi-sarathi-logo.svg" alt="Lipi सारथि" width="160" height="44">
+      </a>
+      <div class="nav-links">
+        <a href="home.html"       class="nav-link">सबै किबोर्ड</a>
+        <a href="traditional.html" class="nav-link">परम्परागत</a>
+        <a href="romanized.html"   class="nav-link">Romanized</a>
+        <a href="index.html"        class="nav-link nav-cta">← Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════ HEADER ════════════════════════════ -->
+  <header class="hd">
+    <h1>Lipi <em>सारथि</em> — English QWERTY</h1>
+    <p class="hd-tag">Full Layout with Numpad</p>
+  </header>
+
+  <!-- ══════════════════════════ KEYBOARD PAGE ═════════════════════════ -->
+  <div class="kb-page">
+
+    <!-- ──────────────────────── OUTPUT PANEL ──────────────────────── -->
+    <div class="out-wrap">
+      <div class="out-topbar">
+        <span class="out-lbl">Output</span>
+        <span class="out-stats" id="stats">0 words &nbsp;·&nbsp; 0 chars</span>
+      </div>
+      <div
+        class="out-area"
+        id="out"
+        contenteditable="true"
+        spellcheck="true"
+        inputmode="none"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Text output"
+      ></div>
+      <div class="btn-row">
+        <button class="btn"          onclick="copyText()">⎘ Copy</button>
+        <button class="btn"          onclick="doBackspace()">⌫ Delete</button>
+        <button class="btn btn-del"  onclick="clearText()">✕ Clear</button>
+        <span class="toast" id="toast">✓ Copied</span>
+        <button class="btn btn-snd" id="sndBtn" onclick="toggleSound()" title="Toggle keystroke sound">🔊 Sound</button>
+      </div>
+    </div>
+
+    <!-- ───────────────────────── KEYBOARD ─────────────────────────── -->
+    <div class="kb-wrap">
+      <div class="kb-outer" id="kbOuter">
+
+        <!-- Title bar -->
+        <div class="kb-titlebar">
+          <div class="state-dots">
+            <div class="state-dot dot-shift" id="dotShift" title="Shift"></div>
+            <div class="state-dot dot-caps"  id="dotCaps"  title="Caps Lock"></div>
+            <div class="state-dot dot-num"   id="dotNum"   title="Num Lock"></div>
+          </div>
+          <span class="mode-lbl" id="modeLabel">Normal</span>
+          &nbsp;·&nbsp; QWERTY Full Layout
+          <span class="bar-hint">Blue = Shift layer &nbsp;·&nbsp; Click or type</span>
+        </div>
+
+        <!-- Keyboard body: main section + separator + numpad -->
+        <div class="kb-body" id="kbBody">
+          <div class="kb-main" id="kbMain">
+            <!-- Function row injected by JS -->
+            <div class="fn-row" id="fnRow"></div>
+            <!-- Alpha/number rows injected by JS -->
+            <div id="kbRows"></div>
+          </div>
+          <div class="kb-sep"></div>
+          <div class="numpad" id="numpad"></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /kb-page -->
+
+  <!-- ══════════════════════════ AD FOOTER ═════════════════════════════ -->
+  <!-- Paste AdSense code here when approved -->
+  <div id="ad-footer"></div>
+
+  <!-- ══════════════════════════════ FOOTER ════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo-row">
+        <span class="footer-dev-name">Lipi सारथि</span>
+        <span style="color: rgba(255,255,255,.2)">·</span>
+        <span>Unicode Compliant · Digital Nepal Framework Aligned</span>
+      </div>
+      <div class="footer-links">
+        <a href="traditional.html">Traditional</a>
+        <a href="romanized.html">Romanized</a>
+        <a href="home.html">सबै किबोर्ड</a>
+        <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" rel="noopener">Developed By Bibek Rai</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════ SCRIPT ════════════════════════════ -->
+  <script src="src/engine-english.js"></script>
+
+</body>
+</html>

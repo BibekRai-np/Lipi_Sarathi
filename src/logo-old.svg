@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 88" width="160" height="44" aria-label="Lipi सारथि">
+  <rect x="4" y="4" width="78" height="80" rx="16" fill="#003893"/>
+  <rect x="7" y="81" width="72" height="4" rx="2" fill="#001352"/>
+  <rect x="18" y="69" width="50" height="4" rx="2" fill="#D4820A"/>
+  <text x="43" y="50" font-family="Noto Sans Devanagari,Mangal,serif" font-size="46" font-weight="600" fill="white" text-anchor="middle" dominant-baseline="central">ल</text>
+  <rect x="98" y="10" width="1.5" height="60" rx=".75" fill="rgba(100,116,139,.35)"/>
+  <text x="110" y="44" font-family="Trebuchet MS,Helvetica Neue,Segoe UI,sans-serif" font-size="38" font-weight="700" fill="#003893">Lipi</text>
+  <text x="110" y="77" font-family="Noto Sans Devanagari,Mangal,sans-serif" font-size="26" font-weight="500" fill="#D4820A">सारथि</text>
+</svg>

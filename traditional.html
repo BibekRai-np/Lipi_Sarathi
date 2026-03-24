@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ne">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lipi सारथि — Traditional Nepali Virtual Keyboard</title>
+  <meta name="description" content="Lipi सारथि परम्परागत किबोर्ड: Preeti र Sagarmatha सिकेकाहरूका लागि। लोकसेवा परीक्षाको exact layout। इन्स्टलेसन नचाहिँने।">
+  <meta name="keywords" content="traditional nepali keyboard, nepali unicode, loksewa typing, परम्परागत किबोर्ड, virtual keyboard, virtual Nepali Keyboard">
+  <meta name="author" content="Bibek Rai">
+  <meta property="og:title" content="Lipi सारथि — परम्परागत नेपाली किबोर्ड">
+  <meta property="og:description" content="लोकसेवा परीक्षाको exact layout — browser मै, कुनै installation छैन।">
+  <meta property="og:image" content="fevicon.png">
+  <link rel="icon" type="image/png" href="fevicon.png">
+  <script src="src/protection.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════════════
+     LIPI SARATHI — TRADITIONAL KEYBOARD PAGE
+     ───────────────────────────────────────────────────────────────────
+     CSS is organised into six clear sections:
+       1. Design Tokens   — all CSS custom properties
+       2. Reset & Base    — minimal reset + body
+       3. Nav             — top navigation (matches index.html)
+       4. Page Header     — title block (.hd)
+       5. Keyboard Widget — output panel + keyboard + legend
+       6. Footer          — bottom bar (matches index.html)
+     ═══════════════════════════════════════════════════════════════════ */
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     1. DESIGN TOKENS
+    ───────────────────────────────────────────────────────────────── */
+    :root {
+      /* Shared site palette (matches index.html) */
+      --navy:        #932700;
+      --navy2:       #001a5c;
+      --navy-lt:     #1a4fa8;
+      --crimson:     #c8102e;
+      --crimson2:    #e8193a;
+      --gold:        #D4820A;
+      --gold-lt:     #f0a830;
+      --ink:         #0f1420;
+      --ink2:        #1e293b;
+      --muted:       #64748b;
+      --border:      #e2e8f0;
+      --bg:          #f8fafc;
+      --panel:       #f1f5f9;
+      --white:       #ffffff;
+
+      /* Keyboard "Everest" palette — untouched */
+      --ev-void:     #04070f;
+      --ev-night:    #070d1e;
+      --ev-navy:     #0a1228;
+      --ev-deep:     #0d1a38;
+      --ev-key:      #101f40;
+      --ev-key-t:    #172b55;
+      --ev-bdr:      #1e3566;
+      --ev-bot:      #050810;
+      --ev-hover:    #1c2f5a;
+      --ev-crimson:  #c8102e;
+      --ev-crimson2: #e8193a;
+      --ev-gold:     #e8c050;
+      --ev-gold2:    #f5d878;
+      --ev-ice:      #eef4ff;
+      --ev-ice-mid:  #8fa8cc;
+      --ev-ice-dim:  #3a5070;
+
+      /* Responsive keyboard unit — scales the whole keyboard */
+      --ku:  clamp(22px, calc((100vw - 48px) / 15.08), 54px);
+      --gap: clamp(3px, 0.38vw, 5px);
+      --kh:  calc(var(--ku) * 1.15);
+
+      /* Typography */
+      --font-dev:  'Noto Sans Devanagari', 'Mangal', sans-serif;
+      --font-body: 'Hind', 'Noto Sans Devanagari', system-ui, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     2. RESET & BASE
+    ───────────────────────────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    img { max-width: 100%; display: block; }
+    a   { color: var(--navy); text-decoration: none; }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     3. NAV  (matches index.html exactly)
+    ───────────────────────────────────────────────────────────────── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      width: 100%;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .nav-logo svg { display: block; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: color .15s, background .15s;
+    }
+
+    .nav-link:hover { color: var(--navy); background: var(--panel); }
+
+    .nav-link-active {
+      color: var(--navy);
+      background: var(--panel);
+      border-color: var(--border);
+      font-weight: 600;
+    }
+
+    .nav-cta {
+      background: var(--navy);
+      color: white !important;
+      border-color: var(--navy) !important;
+      font-weight: 600;
+    }
+
+    .nav-cta:hover { background: var(--navy2) !important; }
+
+    /* Ad slot — top */
+    #ad-top {
+      width: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--border);
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     4. PAGE HEADER  (.hd)
+    ───────────────────────────────────────────────────────────────── */
+
+    /* Entry animations */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+
+    .hd        { animation: riseIn .55s ease both; }
+    .out-wrap  { animation: riseIn .55s .08s ease both; }
+    .kb-scroll { animation: riseIn .55s .16s ease both; }
+    .legend    { animation: riseIn .55s .24s ease both; }
+
+    .hd {
+      width: 100%;
+      text-align: center;
+      padding: 36px 20px 24px;
+      background: linear-gradient(135deg, var(--navy) 0%, #001a5c 55%, #080020 100%);
+      color: white;
+    }
+
+    .hd h1 {
+      font-family: var(--font-body);
+      font-size: clamp(19px, 3.2vw, 32px);
+      font-weight: 700;
+      letter-spacing: .04em;
+      line-height: 1.2;
+      color: white;
+    }
+
+    .hd h1 em {
+      color: #ff8fa0;
+      font-style: normal;
+    }
+
+    .hd-nep {
+      font-family: var(--font-dev);
+      font-size: clamp(15px, 2.2vw, 22px);
+      font-weight: 600;
+      color: rgba(255, 255, 255, .78);
+      display: block;
+      margin-top: 6px;
+      letter-spacing: .01em;
+    }
+
+    .hd-tagline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: rgba(255, 255, 255, .5);
+      margin-top: 8px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     5. KEYBOARD WIDGET
+         5a  Output panel
+         5b  Keyboard scroll / outer wrapper
+         5c  Keyboard title bar
+         5d  Keyboard body + rows
+         5e  Key styles
+         5f  Character label spans
+         5g  Functional keys (Shift, CapsLock, Space, …)
+         5h  Legend grid
+         5i  Credits card
+    ───────────────────────────────────────────────────────────────── */
+
+    /* Keyboard widget wrapper — centres and constrains everything */
+    .kb-page {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+      gap: 0;
+    }
+
+    /* ── 5a  OUTPUT PANEL ──────────────────────────────────────────── */
+    .out-wrap {
+      width: 100%;
+      max-width: calc(15 * var(--ku) + 14 * var(--gap) + 40px);
+      background: var(--ev-navy);
+      border: 1px solid var(--ev-bdr);
+      border-radius: 10px;
+      padding: 14px 18px 12px;
+      margin-bottom: 14px;
+      box-shadow:
+        0 0 0 1px rgba(238, 244, 255, .03),
+        0 8px 40px rgba(0, 0, 0, .18),
+        inset 0 1px 0 rgba(238, 244, 255, .04);
+    }
+
+    .out-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .out-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ev-ice-dim);
+    }
+
+    .out-count {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ev-ice-dim);
+      margin-left: auto;
+      letter-spacing: .06em;
+    }
+
+    .out-area {
+      font-family: var(--font-dev);
+      font-size: clamp(18px, 2.5vw, 26px);
+      line-height: 1.8;
+      color: var(--ev-ice);
+      min-height: 72px;
+      background: var(--ev-deep);
+      border: 1px solid var(--ev-bdr);
+      border-radius: 7px;
+      padding: 10px 14px;
+      outline: none;
+      cursor: text;
+      word-break: break-word;
+      caret-color: var(--ev-crimson2);
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .out-area:focus {
+      border-color: var(--ev-crimson);
+      box-shadow: 0 0 0 3px rgba(200, 16, 46, .12);
+    }
+
+    .out-area:empty::before {
+      content: 'यहाँ टाइप गर्नुहोस् … (Type here)';
+      color: var(--ev-ice-dim);
+      font-size: .8em;
+      pointer-events: none;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 7px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      border-top: 1px solid rgba(30, 53, 102, .6);
+      padding-top: 9px;
+    }
+
+    .btn {
+      background: transparent;
+      border: 1px solid var(--ev-ice-dim);
+      color: var(--ev-ice-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .btn:hover {
+      color: var(--ev-ice);
+      border-color: var(--ev-ice-mid);
+      background: rgba(238, 244, 255, .05);
+      box-shadow: 0 0 8px rgba(238, 244, 255, .08);
+    }
+
+    .btn:active { transform: scale(.97); }
+
+    .btn-del {
+      border-color: rgba(200, 16, 46, .4);
+      color: rgba(200, 16, 46, .5);
+    }
+
+    .btn-del:hover {
+      color: var(--ev-crimson2);
+      border-color: var(--ev-crimson);
+      background: rgba(200, 16, 46, .08);
+      box-shadow: 0 0 8px rgba(200, 16, 46, .2);
+    }
+
+    .toast {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ev-gold);
+      opacity: 0;
+      transition: opacity .3s;
+      letter-spacing: .08em;
+    }
+
+    .toast.on { opacity: 1; }
+
+    /* ── 5b  KEYBOARD SCROLL / OUTER WRAPPER ──────────────────────── */
+    .kb-scroll {
+      width: 100%;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      padding-bottom: 4px;
+    }
+
+    .kb-scroll::-webkit-scrollbar        { height: 3px; }
+    .kb-scroll::-webkit-scrollbar-track  { background: transparent; }
+    .kb-scroll::-webkit-scrollbar-thumb  { background: var(--ev-bdr); border-radius: 2px; }
+
+    .kb-outer {
+      /* Fixed width so the keyboard never collapses */
+      width: calc(15 * var(--ku) + 14 * var(--gap) + 40px);
+      flex-shrink: 0;
+    }
+
+    /* ── 5c  KEYBOARD TITLE BAR ────────────────────────────────────── */
+    .kb-titlebar {
+      background: var(--ev-deep);
+      border: 1px solid var(--ev-bdr);
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      padding: 6px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ev-ice-dim);
+    }
+
+    .state-dots { display: flex; gap: 6px; margin-right: 2px; }
+
+    .state-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid var(--ev-ice-dim);
+      transition: all .2s;
+    }
+
+    .dot-shift { border-color: rgba(200, 16, 46, .5); }
+    .dot-shift.on {
+      background: var(--ev-crimson2);
+      box-shadow: 0 0 8px rgba(200, 16, 46, .8), 0 0 16px rgba(200, 16, 46, .3);
+      border-color: var(--ev-crimson2);
+    }
+
+    .dot-caps { border-color: rgba(232, 192, 80, .5); }
+    .dot-caps.on {
+      background: var(--ev-gold);
+      box-shadow: 0 0 8px rgba(232, 192, 80, .8), 0 0 16px rgba(232, 192, 80, .3);
+      border-color: var(--ev-gold);
+    }
+
+    .mode-lbl  { color: var(--ev-ice); }
+    .bar-right { margin-left: auto; font-size: 9px; color: var(--ev-ice-dim); }
+
+    /* ── 5d  KEYBOARD BODY & ROWS ──────────────────────────────────── */
+    .kb-body {
+      background: linear-gradient(175deg, #0c1630 0%, #08101f 100%);
+      border: 1px solid var(--ev-bdr);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: 14px 18px 18px;
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, .4),
+        0 0 0 1px rgba(238, 244, 255, .02),
+        inset 0 1px 0 rgba(238, 244, 255, .03),
+        inset 0 -2px 20px rgba(0, 0, 0, .4);
+    }
+
+    .kb-row {
+      display: flex;
+      gap: var(--gap);
+      margin-bottom: var(--gap);
+      align-items: stretch;
+      flex-wrap: nowrap;
+      justify-content: center;
+    }
+
+    .kb-row:last-child { margin-bottom: 0; }
+
+    /* ── 5e  KEY STYLES ────────────────────────────────────────────── */
+    /*
+     * --kw is the key's width in keyboard units, set per-key by JS.
+     * Width formula: kw × (ku + gap) − gap
+     * Every row summing to 15u has identical total pixel width.
+     */
+    .key {
+      width: calc(var(--kw, 1) * (var(--ku) + var(--gap)) - var(--gap));
+      height: var(--kh);
+      flex-shrink: 0;
+
+      background: linear-gradient(168deg, var(--ev-key-t) 0%, var(--ev-key) 55%);
+      border: 1px solid var(--ev-bdr);
+      border-bottom: 3px solid var(--ev-bot);
+      border-radius: 6px;
+      box-shadow:
+        inset 0 1px 0 rgba(238, 244, 255, .06),
+        inset 0 -1px 0 rgba(0, 0, 0, .35);
+
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      transition: filter .08s, transform .08s, border-bottom-width .08s, box-shadow .12s;
+    }
+
+    .key:hover {
+      filter: brightness(1.25);
+      box-shadow:
+        inset 0 1px 0 rgba(238, 244, 255, .09),
+        0 0 10px rgba(200, 16, 46, .1);
+    }
+
+    .key:active,
+    .key.pressed {
+      background: linear-gradient(168deg, #8a0a1e 0%, var(--ev-crimson) 100%);
+      border-color: var(--ev-crimson2);
+      border-bottom-width: 1px;
+      transform: translateY(2px);
+      box-shadow:
+        0 0 18px rgba(200, 16, 46, .45),
+        inset 0 1px 0 rgba(255, 255, 255, .1);
+    }
+
+    /* ── 5f  CHARACTER LABEL SPANS ─────────────────────────────────── */
+    /* Top-left: shift character — Himalayan gold */
+    .ks {
+      font-family: var(--font-dev);
+      font-size: clamp(7px, calc(var(--ku) * .22), 13px);
+      color: var(--ev-gold);
+      line-height: 1;
+      padding: calc(var(--ku) * .09) 0 0 calc(var(--ku) * .1);
+      min-height: 1em;
+      text-shadow: 0 0 5px rgba(232, 192, 80, .35);
+    }
+
+    /* Bottom-left: normal character — ice white */
+    .kn {
+      font-family: var(--font-dev);
+      font-size: clamp(12px, calc(var(--ku) * .38), 22px);
+      color: var(--ev-ice);
+      line-height: 1;
+      padding: 0 0 calc(var(--ku) * .1) calc(var(--ku) * .1);
+      text-shadow: 0 0 4px rgba(238, 244, 255, .2);
+    }
+
+    /* Tiny ASCII hint — bottom-right corner */
+    .kh {
+      position: absolute;
+      bottom: calc(var(--ku) * .05);
+      right: calc(var(--ku) * .07);
+      font-family: var(--font-mono);
+      font-size: clamp(5px, calc(var(--ku) * .15), 9px);
+      color: rgba(238, 244, 255, .16);
+      line-height: 1;
+    }
+
+    /* When Shift / CapsLock is active: gold becomes primary, white dims */
+    .shift-live .ks {
+      font-size: clamp(11px, calc(var(--ku) * .35), 20px);
+      color: var(--ev-ice);
+      text-shadow: 0 0 4px rgba(238, 244, 255, .2);
+    }
+
+    .shift-live .kn {
+      font-size: clamp(7px, calc(var(--ku) * .2), 12px);
+      color: var(--ev-ice-dim);
+      text-shadow: none;
+    }
+
+    /* ── 5g  FUNCTIONAL KEYS ───────────────────────────────────────── */
+    .key-fn {
+      background: linear-gradient(168deg, #0e1a32 0%, #090f1e 100%);
+      border-color: #162a50;
+    }
+
+    .key-fn .fn-lbl {
+      font-family: var(--font-mono);
+      font-size: clamp(7px, calc(var(--ku) * .17), 11px);
+      color: var(--ev-ice-dim);
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2px;
+      letter-spacing: .04em;
+    }
+
+    /* CapsLock lit — gold */
+    .caps-lit {
+      background: linear-gradient(168deg, #2e2000 0%, #1a1200 100%) !important;
+      border-color: var(--ev-gold) !important;
+      box-shadow: 0 0 10px rgba(232, 192, 80, .3), inset 0 0 8px rgba(232, 192, 80, .08) !important;
+    }
+
+    .caps-lit .fn-lbl {
+      color: var(--ev-gold) !important;
+      text-shadow: 0 0 6px rgba(232, 192, 80, .5);
+    }
+
+    /* Shift lit — crimson */
+    .shift-lit {
+      background: linear-gradient(168deg, #2a0008 0%, #180005 100%) !important;
+      border-color: var(--ev-crimson) !important;
+      box-shadow: 0 0 10px rgba(200, 16, 46, .35), inset 0 0 6px rgba(200, 16, 46, .08) !important;
+    }
+
+    .shift-lit .fn-lbl { color: var(--ev-crimson2) !important; }
+
+    /* Space bar label */
+    .sp-lbl {
+      font-family: var(--font-mono);
+      font-size: clamp(7px, calc(var(--ku) * .14), 10px);
+      color: var(--ev-ice-dim);
+      position: absolute;
+      bottom: calc(var(--ku) * .1);
+      left: 50%;
+      transform: translateX(-50%);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Nepal-flag divider rule between keyboard and legend */
+    .flag-rule {
+      width: 100%;
+      max-width: calc(15 * var(--ku) + 14 * var(--gap) + 40px);
+      height: 2px;
+      background: linear-gradient(
+        to right,
+        transparent 0%,
+        var(--ev-crimson) 20%,
+        var(--ev-ice-mid) 50%,
+        var(--ev-crimson) 80%,
+        transparent 100%
+      );
+      margin: 10px 0 6px;
+      opacity: .4;
+    }
+
+    /* ── 5h  LEGEND GRID ───────────────────────────────────────────── */
+    .legend {
+      width: 100%;
+      max-width: calc(15 * var(--ku) + 14 * var(--gap) + 40px);
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+    }
+
+    .leg-card {
+      background: var(--ev-navy);
+      border: 1px solid var(--ev-bdr);
+      border-radius: 8px;
+      padding: 11px 14px;
+      transition: border-color .2s;
+    }
+
+    .leg-card:hover { border-color: var(--ev-ice-mid); }
+
+    .leg-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ev-gold);
+      margin-bottom: 8px;
+      text-shadow: 0 0 6px rgba(232, 192, 80, .3);
+    }
+
+    .leg-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ev-ice-mid);
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+    }
+
+    .leg-row:last-child { margin-bottom: 0; }
+
+    .leg-k {
+      font-family: var(--font-mono);
+      background: var(--ev-key);
+      border: 1px solid var(--ev-bdr);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 10px;
+      color: var(--ev-ice);
+      white-space: nowrap;
+    }
+
+    .leg-d {
+      font-family: var(--font-dev);
+      font-size: 16px;
+      color: var(--ev-ice);
+    }
+
+    /* ── 5i  CREDITS CARD ──────────────────────────────────────────── */
+    .leg-credits {
+      border-color: rgba(200, 16, 46, .3);
+      background: linear-gradient(135deg, var(--ev-navy) 0%, #120818 100%);
+    }
+
+    .leg-credits:hover { border-color: var(--ev-crimson); }
+
+    .leg-credits .leg-title {
+      color: var(--ev-crimson2);
+      text-shadow: 0 0 6px rgba(200, 16, 46, .4);
+    }
+
+    .cred-main {
+      font-family: var(--font-dev);
+      font-size: 14px;
+      color: var(--ev-ice);
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .cred-sep {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(to right, rgba(200, 16, 46, .3), transparent);
+      margin: 8px 0;
+    }
+
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ev-crimson);
+      color: var(--ev-ice);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--ev-crimson2);
+      transition: all .15s;
+      box-shadow: 0 0 12px rgba(200, 16, 46, .2);
+      margin-bottom: 8px;
+    }
+
+    .dl-btn:hover {
+      background: var(--ev-crimson2);
+      box-shadow: 0 0 20px rgba(200, 16, 46, .5);
+      transform: translateY(-1px);
+    }
+
+    .dl-btn:active { transform: scale(.97); }
+
+    .dl-arrow { font-size: 13px; }
+
+    .cred-line {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ev-ice-dim);
+      letter-spacing: .04em;
+      margin-bottom: 3px;
+    }
+
+    .cred-line a {
+      color: var(--ev-ice-mid);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(143, 168, 204, .3);
+      transition: color .15s, border-color .15s;
+    }
+
+    .cred-line a:hover { color: var(--ev-ice); border-color: var(--ev-ice); }
+
+    .cred-webapp {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ev-ice-dim);
+      letter-spacing: .04em;
+      margin-top: 2px;
+    }
+
+    .cred-webapp a {
+      color: var(--ev-gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(232, 192, 80, .3);
+      transition: color .15s, border-color .15s;
+    }
+
+    .cred-webapp a:hover { color: var(--ev-gold2); border-color: var(--ev-gold2); }
+
+
+    /* ─────────────────────────────────────────────────────────────────
+     6. FOOTER  (matches index.html exactly)
+    ───────────────────────────────────────────────────────────────── */
+    #ad-footer {
+      width: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: var(--panel);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--border);
+    }
+
+    .footer {
+      width: 100%;
+      background: var(--ink);
+      color: rgba(255, 255, 255, .55);
+      padding: 32px 20px;
+      font-size: 13px;
+      margin-top: auto;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-dev-name {
+      font-family: var(--font-dev);
+      font-size: 15px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, .88);
+    }
+
+    .footer a {
+      color: var(--gold-lt);
+      text-decoration: none;
+      transition: color .15s;
+    }
+
+    .footer a:hover { color: white; }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════ AD TOP ════════════════════════════ -->
+  <div id="ad-top"></div>
+
+  <!-- ════════════════════════════════ NAV ═════════════════════════════ -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="src/lipi-sarathi-logo.svg" alt="Lipi सारथि" width="160" height="44">
+      </a>
+      <div class="nav-links">
+        <a href="home.html"      class="nav-link">सबै किबोर्ड</a>
+        <a href="romanized.html"  class="nav-link">Romanized</a>
+        <a href="english.html"    class="nav-link">English</a>
+        <a href="index.html"       class="nav-link nav-cta">← Home</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════ HEADER ════════════════════════════ -->
+  <header class="hd">
+    <h1>Traditional <em>Nepali</em> Unicode Keyboard</h1>
+    <span class="hd-nep">नेपाली परम्परागत युनिकोड किबोर्ड</span>
+    <p class="hd-tagline">Devanagari script &nbsp;·&nbsp; Direct key mapping &nbsp;·&nbsp; Like Preeti font </p>
+  </header>
+
+  <!-- ══════════════════════════ KEYBOARD PAGE ═════════════════════════ -->
+  <div class="kb-page">
+
+    <!-- ──────────────────────── OUTPUT PANEL ──────────────────────── -->
+    <div class="out-wrap">
+      <div class="out-topbar">
+        <span class="out-label">Output — आउटपुट</span>
+        <span class="out-count" id="charCount">0 chars</span>
+      </div>
+      <div
+        class="out-area"
+        id="out"
+        contenteditable="true"
+        spellcheck="false"
+        inputmode="none"
+        role="textbox"
+        aria-multiline="true"
+        aria-label="Nepali text output"
+      ></div>
+      <div class="btn-row">
+        <button class="btn"     onclick="copyText()">⎘ Copy</button>
+        <button class="btn"     onclick="doBackspace()">⌫ Delete</button>
+        <button class="btn btn-del" onclick="clearText()">✕ Clear</button>
+        <span class="toast" id="toast">✓ Copied to clipboard</span>
+      </div>
+    </div>
+
+    <!-- ───────────────────────── KEYBOARD ─────────────────────────── -->
+    <div class="kb-scroll">
+      <div class="kb-outer" id="kbOuter">
+
+        <!-- Title bar -->
+        <div class="kb-titlebar">
+          <div class="state-dots">
+            <div class="state-dot dot-shift" id="dotShift" title="Shift"></div>
+            <div class="state-dot dot-caps"  id="dotCaps"  title="Caps Lock"></div>
+          </div>
+          <span class="mode-lbl" id="modeLabel">Normal</span>
+          &nbsp;·&nbsp; Traditional Nepali
+          <span class="bar-right">Gold = Shift layer</span>
+        </div>
+
+        <!-- Keyboard rows injected by JS -->
+        <div class="kb-body" id="kbBody">
+          <div id="kbRows"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Decorative divider -->
+    <div class="flag-rule"></div>
+
+    <!-- ───────────────────────── LEGEND ────────────────────────────── -->
+    <div class="legend">
+
+      <!-- Vowel signs -->
+      <div class="leg-card">
+        <div class="leg-title">// Vowel Signs / स्वर चिह्न</div>
+        <div class="leg-row"><span class="leg-k">f</span><span class="leg-d">ा</span>aa-matra</div>
+        <div class="leg-row"><span class="leg-k">l</span><span class="leg-d">ि</span>i-matra</div>
+        <div class="leg-row"><span class="leg-k">'</span><span class="leg-d">ु</span>u-matra</div>
+        <div class="leg-row"><span class="leg-k">]</span><span class="leg-d">े</span>e-matra</div>
+        <div class="leg-row"><span class="leg-k">[</span><span class="leg-d">ृ</span>ri-matra</div>
+      </div>
+
+      <!-- Common keys -->
+      <div class="leg-card">
+        <div class="leg-title">// Common Keys / सामान्य</div>
+        <div class="leg-row"><span class="leg-k">s</span><span class="leg-d">क</span>ka →<span class="leg-k">S</span><span class="leg-d">क्</span></div>
+        <div class="leg-row"><span class="leg-k">g</span><span class="leg-d">न</span>na →<span class="leg-k">G</span><span class="leg-d">न्</span></div>
+        <div class="leg-row"><span class="leg-k">h</span><span class="leg-d">ज</span>ja →<span class="leg-k">H</span><span class="leg-d">झ</span></div>
+        <div class="leg-row"><span class="leg-k">z</span><span class="leg-d">श</span>sha →<span class="leg-k">Z</span><span class="leg-d">श्</span></div>
+        <div class="leg-row"><span class="leg-k">c</span><span class="leg-d">अ</span>a →<span class="leg-k">C</span><span class="leg-d">ऋ</span></div>
+      </div>
+
+      <!-- Special keys -->
+      <div class="leg-card">
+        <div class="leg-title">// Special / विशेष</div>
+        <div class="leg-row"><span class="leg-k">\</span><span class="leg-d">्</span>halant</div>
+        <div class="leg-row"><span class="leg-k">.</span><span class="leg-d">।</span>danda →<span class="leg-k">></span><span class="leg-d">श्र</span></div>
+        <div class="leg-row"><span class="leg-k">m</span><span class="leg-d">ZWNJ</span>→<span class="leg-k">M</span><span class="leg-d">ः</span></div>
+        <div class="leg-row"><span class="leg-k">q</span><span class="leg-d">त्र</span>→<span class="leg-k">Q</span><span class="leg-d">त्त</span></div>
+        <div class="leg-row"><span class="leg-k">-</span><span class="leg-d">औ</span>→<span class="leg-k">_</span><span class="leg-d">ओ</span></div>
+      </div>
+
+      <!-- Conjuncts -->
+      <div class="leg-card">
+        <div class="leg-title">// Conjuncts / संयुक्ताक्षर</div>
+        <div class="leg-row"><span class="leg-k">1</span><span class="leg-d">१</span>→<span class="leg-k">!</span><span class="leg-d">ज्ञ</span></div>
+        <div class="leg-row"><span class="leg-k">4</span><span class="leg-d">४</span>→<span class="leg-k">$</span><span class="leg-d">द्ध</span></div>
+        <div class="leg-row"><span class="leg-k">i</span><span class="leg-d">ष</span>→<span class="leg-k">I</span><span class="leg-d">क्ष</span></div>
+        <div class="leg-row"><span class="leg-k">q</span><span class="leg-d">त्र</span>tra</div>
+        <div class="leg-row"><span class="leg-k">Q</span><span class="leg-d">त्त</span>tta</div>
+      </div>
+
+      <!-- Credits / Download -->
+      <div class="leg-card leg-credits">
+        <div class="leg-title">// Download &amp; Credits</div>
+        <div class="cred-main">Nepali Traditional Unicode with Comma,</div>
+        <a class="dl-btn"
+          href="https://github.com/sapradhan/ne-trad-ttf/releases/download/1.3.0/win-ne-trad-ttf-bin-1.3.0.zip"
+          download
+          title="Download ne-trad-ttf 1.3.0 for Windows">
+          <span class="dl-arrow">⬇</span> Download for Windows
+        </a>
+        <div class="cred-sep"></div>
+        <div class="cred-line">
+          Keyboard layout by
+          <a href="https://github.com/sapradhan/ne-trad-ttf" target="_blank" rel="noopener">sapradhan</a>
+        </div>
+        <div class="cred-webapp">
+          Web app by
+          <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" rel="noopener">Bibek Rai</a>
+        </div>
+      </div>
+
+    </div><!-- /legend -->
+
+  </div><!-- /kb-page -->
+
+  <!-- ══════════════════════════ AD FOOTER ═════════════════════════════ -->
+  <!-- Paste AdSense code here when approved -->
+  <div id="ad-footer"></div>
+
+  <!-- ══════════════════════════════ FOOTER ════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo-row">
+        <span class="footer-dev-name">Lipi सारथि</span>
+        <span style="color: rgba(255,255,255,.2)">·</span>
+        <span>Unicode Compliant · Digital Nepal Framework Aligned</span>
+      </div>
+      <div class="footer-links">
+        <a href="romanized.html">Romanized</a>
+        <a href="english.html">English</a>
+        <a href="home.html">सबै किबोर्ड</a>
+        <a href="https://www.facebook.com/share/14SVEPRB5fY/?mibextid=wwXIfr" target="_blank" rel="noopener">Developed By Bibek Rai</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════ SCRIPT ════════════════════════════ -->
+  <script src="src/engine-traditional.js"></script>
+
+</body>
+</html>
