@@ -607,7 +607,7 @@ a{color:var(--navy);text-decoration:none}
 
 <script>
 function shareWhatsApp() {
-  const url = encodeURIComponent(window.location.origin + '/home.html');
+  const url = encodeURIComponent(window.location.href);
   const msg = encodeURIComponent('नेपाली Unicode टाइप गर्न यो free tool प्रयोग गर्नुहोस् — No इन्स्टलेसन · No Registration · १००% निःशुल्क  ');
   window.open('https://wa.me/?text=' + msg + url, '_blank');
 }
